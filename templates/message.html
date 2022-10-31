@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<head></head>
+<body style="color:gold; background-color: black;">
+<h1 style="text-align: center;">Thanks for Purchasing with Us.</h1>
+{% if  p > 1 %}
+<h3 style="text-align: center; ">Your Tickets</h3>
+<p>Event name: {{ name }}</p>
+<p> Event address: {{ address }}</p>
+<p>Event Date: {{ date }}</p>
+<p>Access keys</p>
+<ul>
+{% for i in keys %}
+<li>{{ i }}</li>
+{% endfor %}
+</ul>
+{% else %}
+<h3 style="text-align: center; ">Your Ticket</h3>
+<p>Event Name: {{ name }}</p>
+<p> Event Address: {{ address }}</p>
+<p>Event Date: {{ date }}</p>
+<br>
+Your Access keys: 
+<p>{% for i in keys %} {{ i|safe }} {% endfor %}</p>
+{% endif %}
+</body>
+</html>
