@@ -17,3 +17,4 @@ python-decouple==3.6
 celery==5.2.7
 Pillow==9.2.0
 whitenoise==6.2.0
+cloudinary
