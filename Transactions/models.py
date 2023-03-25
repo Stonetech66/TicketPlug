@@ -41,11 +41,11 @@ class Payment(models.Model):
 class SoldTicket(models.Model):
     id=models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     payment=models.ForeignKey(Payment, on_delete=models.CASCADE )
-    ticket_class=models.ForeignKey(TicketPrice, related_name='ticket_class', on_delete=models.SET_NULL, null=True)
+    ticket=models.ForeignKey(TicketPrice, related_name='ticket', on_delete=models.SET_NULL, null=True)
     event=models.ForeignKey(OrderTicket, on_delete=models.SET_NULL, null=True, related_name='event_tickets')
-    key=models.UUIDField(default=uuid.uuid4, editable=False)
+    key=models.CharField(max_length=16)
     user=models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='user_purchased_tickets')
     used=models.BooleanField(default=False)
 
     def __str__(self):
-        return str(self.user.username)
+        return str(self.user.email)
