@@ -2,23 +2,27 @@ from rest_framework import serializers, status
 from .models import Category, Event, TicketPrice, TrendingEvents
 
 class CreateEventPriceSerializer(serializers.ModelSerializer):
+    id= serializers.IntegerField(read_only=True) 
+    price=serializers.IntegerField(required=False)
     class Meta:
         model=TicketPrice
         fields=[ 
-            'id','event', 'label', 'price', 'description'
+            'id', 'event', 'label', 'price', 'description', 'is_free', 'qty'
         ]
 
     def validate_event(self, value):
         request=self.context.get('request')
         if value.user != request.user:
-            raise serializers.ValidationError("invalid event id this event dosent belong to you")
+            raise serializers.ValidationError("invalid event id ")
         return value
 
 class EventTicketPricesSerializer(serializers.Serializer):
-    id=serializers.FloatField(read_only=True)
+    id=serializers.IntegerField(read_only=True)
     label=serializers.CharField(read_only=True)
     price=serializers.FloatField(read_only=True)
+    is_free=serializers.BooleanField(read_only=True)
     desciption=serializers.CharField(read_only=True)
+    tickets_available=serializers.IntegerField(read_only=True, source='get_tickets_available')
 
 
 class EventCreateSerializer(serializers.ModelSerializer):
@@ -26,18 +30,19 @@ class EventCreateSerializer(serializers.ModelSerializer):
     id=serializers.UUIDField(read_only=True)
     tickets=EventTicketPricesSerializer(read_only=True, many=True, source='event_fees')
     tags=serializers.ListField(child=serializers.CharField(),required=False, write_only=True)
-    tag=serializers.SerializerMethodField()
-    Category=serializers.StringRelatedField(many=True, read_only=True, source='category')
+    # tag=serializers.SerializerMethodField()
     approved=serializers.BooleanField(read_only=True)
     class Meta:
         model=Event
-        fields=['id', 'user','name', 'Category','category','tag','tags','country','state','address', 'city', 'image_1', 'image_2', 'image_3', 'description', 'start_date', 'end_date', 'approved','tickets',]
+        fields=['id', 'user','name','category','tags','country','state','address', 'city', 'image', 'description', 'start_date', 'end_date', 'approved','tickets',]
 
-    def get_tag(self, obj):
-        if type(obj.tags) == list:
-            return obj.tags       
-        else:
-            return eval(obj.tags)
+    def to_representation(self, instance):
+        res= super().to_representation(instance)
+        try:
+            res['tags']= eval(instance.tags)
+        except:
+            res['tags'] = instance.tags
+        return res
     def validate(self, attrs):
         if attrs['start_date'] > attrs['end_date']:
             raise serializers.ValidationError({'start_date':'invalid dates'})
@@ -51,9 +56,7 @@ class EventSerializer(serializers.Serializer):
     city=serializers.CharField(read_only=True)
     state=serializers.CharField(read_only=True)
     address=serializers.CharField(read_only=True)
-    image_1=serializers.ImageField(read_only=True)
-    image_2=serializers.ImageField(read_only=True)
-    image_3=serializers.ImageField(read_only=True)
+    image=serializers.ImageField(read_only=True)
     tickets=EventTicketPricesSerializer(read_only=True, many=True, source='event_fees')
     start_date=serializers.DateTimeField(read_only=True)
     end_date=serializers.DateTimeField(read_only=True)
@@ -65,9 +68,16 @@ class EventSerializer(serializers.Serializer):
 
 
 class BuyTicketSerializer(serializers.Serializer):
-    ticket_id=serializers.IntegerField(source='event_ticket')
     qty=serializers.IntegerField()
     emails=serializers.ListField(child=serializers.EmailField(), required=False)
+
+    def validate(self, attrs):
+            if attrs['emails'] == None:
+                 attrs['emails'] = [] 
+            elif len(attrs['emails']) != attrs['qty']:
+                    raise serializers.ValidationError('incomplete emails provided, qty and emails dont match')
+            return attrs
+
 
 class CategorySerializer(serializers.Serializer):
     name=serializers.CharField()
