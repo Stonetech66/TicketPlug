@@ -1,16 +1,10 @@
-<!DOCTYPE html>
-<head></head>
-<body style="color:gold; background-color: black;">
-<h1 style="text-align: center;">Thanks for Purchasing with Us.</h1>
-
-<div style="display: grid; padding-left: 90px;margin: auto;">
-<h3 style="text-align: center; ">Your Ticket</h3>
-<p>Event Name: {{ name }}</p>
-<p> Event Address: {{ address }}</p>
-<p>Event Date: {{ date }}</p>
-<p>Your Access key:   {{ keys|safe }} </p>
-
-</div>
-
-</body>
-</html>
+{% extends 'base.html' %}
+{% block message %}
+<h2>Hello Your Ticket has arrived 🎉</h2>
+<h3 style="text-align: center; ">Purchased Ticket🎫</h3>
+<p>Event: {{ event }}</p>
+<p> Address: {{ address }}</p>
+<p>Date: {{ date }}</p>
+<br>
+<i>please find your ticket attached below</i>
+{% endblock %}
