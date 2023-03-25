@@ -14,6 +14,7 @@ RUN pip install -r requirements.txt
 
 
 
-RUN chmod +x /app/entrypoint.sh
+RUN chmod +x /app/server.sh \
+    && chmod +x /app/worker.sh
 
 
