@@ -1,0 +1,35 @@
+services:
+  e-ticket:
+    depends_on:
+      - db
+      - rabbitmq
+    build: .
+    ports:
+      - 8000:8000
+    env_file:
+      - ./.env
+    command: sh -c "sh server.sh "
+    volumes:
+      - ./:/app
+  db:
+    image: postgres:15.2-alpine
+    restart: always
+    env_file:
+      - ./.env
+    volumes:
+      - postgresdb:/var/lib/postgresql/data
+
+  worker:
+    restart: unless-stopped
+    depends_on:
+      - rabbitmq
+    build: .
+    command: sh - c "sh worker.sh"
+
+  rabbitmq:
+    image: rabbitmq:3.11.9-alpine
+    ports:
+      - 5200:5200
+
+volumes:
+  postgresdb:
