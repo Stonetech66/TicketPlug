@@ -54,9 +54,6 @@ class Makepayment(APIView):
         return Response({'error':'invalid uuid or you have not selected a ticket yet'}, status=status.HTTP_404_NOT_FOUND)
 
 class PayStack_Webhook(APIView):
-    '''
-    This does not concern you
-    '''
     permission_classes=[]
     swagger_schema=None
     def post(self,request, *args, **kwargs):
