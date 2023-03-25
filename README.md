@@ -19,7 +19,7 @@ Integrated Paystack payment API to handle payments, also made use of celery to h
 - Paystack
 
 ## Live Project Link
-   You can find the documentation of the API here <link>https://e-ticket.onrender.com/link>
+   You can find the documentation of the API here <link>https://e-ticket.onrender.com/
 
 
 
