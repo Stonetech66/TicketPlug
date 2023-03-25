@@ -18,7 +18,7 @@ class EventAdmin(admin.ModelAdmin):
     search_fields=['name', 'city', 'state']
 
 class Event_FeeAdmin(admin.ModelAdmin):
-    list_display=['event', 'label', 'price']
+    list_display=['event', 'label', 'price', 'qty', 'sold']
     list_display_links=['event', 'label']
 
 
