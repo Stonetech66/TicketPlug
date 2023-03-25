@@ -110,37 +110,25 @@ WSGI_APPLICATION = 'Event_Project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-# import dj_database_url
 
-# if DEBUG == False:
-#     DATABASES = {
-#         'default': 
-#             dj_database_url.config(
-#                 default=config('HOST'),
-#                 conn_max_age=600
-#             )
-
-        
-#     }
-# else:
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'USER': config('POSTGRES_USER'),
-#         'NAME':config('POSTGRES_NAME'),
-#         'PASSWORD':config('POSTGRES_PASSWORD'),
-#         'HOST': 'db',
-#         'PORT': 5432,
-
-#     }
-# }
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME':BASE_DIR /"db2.sqlite3",
+     'default': {
+         'ENGINE': 'django.db.backends.postgresql',
+         'USER': config('POSTGRES_USER'),
+         'NAME':config('POSTGRES_NAME'), 
+         'PASSWORD':config('POSTGRES_PASSWORD'),
+         'HOST': 'db',
+         'PORT': 5432,
 
     }
-}
+ }
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME':BASE_DIR /"db2.sqlite3",
+#
+#    }
+#}
 # ELASTICSEARCH_DSL= {
 #     'default': {
 #         'hosts' : 'https://my-deployment-5a0969.es.us-central1.gcp.cloud.es.io'
