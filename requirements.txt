@@ -1,4 +1,5 @@
-dj-rest-auth==2.2.5
+qrcode
+dj-rest-auth==3.0.0
 Django==3.2.16
 django-allauth==0.51.0
 django-cors-headers==3.13.0
@@ -12,9 +13,15 @@ drf-yasg==1.21.3
 psycopg2-binary==2.9.3
 django-rest-swagger==2.2.0
 dj-database-url==1.0.0
+elasticsearch
+elasticsearch-dsl
+django-elasticsearch-dsl
 requests==2.26.0
 python-decouple==3.6
 celery==5.2.7
 Pillow==9.2.0
 whitenoise==6.2.0
+celery==5.2.7
+django-filter==22.1
 cloudinary
+pdfkit
