@@ -22,7 +22,6 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions 
 from dj_rest_auth.views import PasswordResetConfirmView
-from dj_rest_auth.registration.views import VerifyEmailView
 
 schema_view=get_schema_view(
     openapi.Info(
@@ -37,16 +36,16 @@ schema_view=get_schema_view(
 )
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('Events.urls')),
-    path('', include('Users.urls')),
-    path('', include('Transactions.urls')),
-    path('admin-setting/', AdminSettings.as_view()),
-    path("docs/", schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('api/v1/', include('Events.urls')),
+    path('api/v1/', include('Users.urls')),
+    path('api/v1/', include('Transactions.urls')),
+    path('api/v1/admin-setting/', AdminSettings.as_view()),
+    path("", schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path("redoc/", schema_view.with_ui('redoc', cache_timeout=0), name='schema-swagger-ui'),
-    path('', include('dj_rest_auth.urls')),
-    path("password/reset/confirm/<uidb64>/<token>/", PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
-    path('signup/', include('dj_rest_auth.registration.urls')),
-       
+    path('api/v1/', include('dj_rest_auth.urls')),
+    path("api/v1/password/reset/confirm/<uidb64>/<token>/", PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
+    path('api/v1/signup/', include('dj_rest_auth.registration.urls')),
+    
 
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
