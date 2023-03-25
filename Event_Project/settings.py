@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 
-
+from django.conf import settings
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,9 +27,10 @@ from decouple import config
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG =True
+DEBUG =config('DEBUG',cast=bool) 
+host=os.environ.get('RENDER_EXTERNAL_URL')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['e-ticket.onrender.com']
 
 
 # Application definition
@@ -42,33 +43,38 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django.contrib.postgres',
     'rest_framework',
         'corsheaders',
     'dj_rest_auth',
-    'django_celery_results',
-    'django_celery_beat',
     'allauth',
     'allauth.account',
     'rest_framework_simplejwt',
-    'rest_framework_swagger',
     'django_filters',
+    'rest_framework_swagger',
     'drf_yasg',
+        'cloudinary',
     'Users.apps.UsersConfig',
     'Events.apps.EventsConfig',
     'ADMIN.apps.AdminConfig',
     'Transactions.apps.TransactionsConfig',
+   
+
 ]
 SITE_ID=1
 AUTH_USER_MODEL='Users.User'
-CELERY_BROKER_URL=config('CELERY_BROKER_URL')
-ACCOUNT_AUTHENTICATION_METHOD='username_email'
+ACCOUNT_AUTHENTICATION_METHOD='email'
 ACCOUNT_EMAIL_VERIFICATION='mandatory'
 ACCOUNT_EMAIL_REQUIRED= True
 CORS_ALLOW_ALL_ORIGINS=True
-
+ACCOUNT_USERNAME_REQUIRED=False
+ACCOUNT_USER_MODEL_USERNAME_FIELD=None
+CELERY_BROKER_URL='ampq://guest:guest@rabbitmq:5672//'
+CELERY_RESULT_BACKEND='ampq://guest:guest@rabbitmq:5672//'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -80,7 +86,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'Event_Project.urls'
 REST_AUTH_TOKEN_MODEL=None
-
+DJANGO_SUPERUSER_PASSWORD=config('DJANGO_SUPERUSER_PASSWORD') 
+DJANGO_SUPERUSER_EMAIL=config('DJANGO_SUPERUSER_EMAIL') 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -103,27 +110,42 @@ WSGI_APPLICATION = 'Event_Project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-import dj_database_url
+# import dj_database_url
 
-if DEBUG == False:
-    DATABASES = {
-        'default': 
-            dj_database_url.config(
-                default=config('FLY_DB_HOST_URL'),
-                conn_max_age=600
-            )
+# if DEBUG == False:
+#     DATABASES = {
+#         'default': 
+#             dj_database_url.config(
+#                 default=config('HOST'),
+#                 conn_max_age=600
+#             )
 
         
-    }
-else:
-    DATABASES = {
+#     }
+# else:
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'USER': config('POSTGRES_USER'),
+#         'NAME':config('POSTGRES_NAME'),
+#         'PASSWORD':config('POSTGRES_PASSWORD'),
+#         'HOST': 'db',
+#         'PORT': 5432,
+
+#     }
+# }
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME':BASE_DIR /"db2.sqlite3",
+
     }
 }
-
-
+# ELASTICSEARCH_DSL= {
+#     'default': {
+#         'hosts' : 'https://my-deployment-5a0969.es.us-central1.gcp.cloud.es.io'
+#     }
+# }
 
 
 
@@ -185,9 +207,11 @@ AUTHENTICATION_BACKENDS= (
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend")
 
+CSRF_COOKIE_SECURE=True
+
 REST_FRAMEWORK= {
      "DEFAULT_AUTHENTICATION_CLASSES":[
-        'rest_framework.authentication.SessionAuthentication',
+         'rest_framework.authentication.SessionAuthentication',
         "dj_rest_auth.jwt_auth.JWTCookieAuthentication"
     ],
 
@@ -201,19 +225,24 @@ REST_FRAMEWORK= {
     "PAGE_SIZE": 10,
 
     'DEFAULT_SCHEMA_CLASS':'rest_framework.schemas.AutoSchema',
-    'DEFAULT_FILTER_BACKENDS':['rest_framework.filters.SearchFilter']
     
 }
-REST_AUTH_SERIALIZERS={
-    "USER_DETAILS_SERIALIZER":'Users.serializers.UserDetailSerializer'
+REST_AUTH={
+    "USER_DETAILS_SERIALIZER":'Users.serializers.UserDetailSerializer', 
+    "REGISTER_SERIALIZER":'Users.serializers.RegisterSerializer', 
+"TOKEN_MODEL" :None, 
+"JWT_AUTH_COOKIE" :'e-ticket-access-cookie', 
+"JWT_AUTH_REFRESH_COOKIE" : 'e-ticket-refresh-cookie', 
+ "USE_JWT": True, 
+    'PASSWORD_RESET_USE_SITES_DOMAIN': True,
+    'OLD_PASSWORD_FIELD_ENABLED': True, 
+"LOGIN_SERIALIZER" :'Users.serializers.LoginSerializer'
 }
-REST_USE_JWT= True
-JWT_AUTH_COOKIE='e-ticket-access-cookie'
-JWT_AUTH_REFRESH_COOKIE= 'e-ticket-refresh-cookie'
+
 from datetime import timedelta
 SIMPLE_JWT={
-    'ACCESS_TOKEN_LIFETIME':timedelta(seconds=100),
-    'REFRESH_TOKEN_LIFETIME':timedelta(seconds=90), 
+    'ACCESS_TOKEN_LIFETIME':timedelta(minutes=6),
+    'REFRESH_TOKEN_LIFETIME':timedelta(days=14), 
     'SIGNING_KEY':config('SIGNING_KEY')
 }
 # CACHES= {
@@ -225,7 +254,7 @@ SIMPLE_JWT={
 # }
 DEFAULT_FROM_EMAIL='noreply@example.com'
 ACCOUNT_ADAPTER='Event_Project.adapter.CustomAdapter'
-FRONTEND_URL='https://e-ticket.com/confirm'
+FRONTEND_URL=config('FRONTEND_URL')
 
 SWAGGER_SETTINGS={
 'LOGIN_URL':'rest_login',
@@ -233,3 +262,11 @@ SWAGGER_SETTINGS={
 }
 SESSION_COOKIE_SECURE=True
 CSRF_COOKIE_SECURE=True
+import cloudinary
+import cloudinary.api
+import cloudinary.uploader
+cloudinary.config( 
+  cloud_name = config('CLOUD_NAME'), 
+  api_key = config('CLOUD_API_KEY') , 
+  api_secret =  config('CLOUD_API_SECRET')
+)
