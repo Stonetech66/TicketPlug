@@ -1,5 +1,5 @@
-<h1 align="center">E-ticket System</h1>
-The E-Ticket System is an API designed to facilitate the sale and purchase of event tickets. This system allows event organizers to create and sell tickets, which must first be approved by the system administrator. Users can then easily browse and purchase tickets for upcoming events. 
+<h1 align="center">TicketPlug</h1>
+The TicketPlug is an API designed to facilitate the sale and purchase of event tickets. This system allows event organizers to create and sell tickets, which must first be approved by the system administrator. Users can then easily browse and purchase tickets for upcoming events. 
 
 ##  Features
 - Approval workflow for event tickets created by organizers
@@ -14,7 +14,7 @@ To install the E-Ticket System, ensure you have docker and docker compose instal
 
 - Clone the repository to your local machine:
 ```
-git clone https://github.com/Stonetech66/E-Ticket-System.git
+git clone https://github.com/Stonetech66/TicketPlug.git
 ```
 - Cd into the directory 
 ```
