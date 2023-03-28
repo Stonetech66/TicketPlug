@@ -1,28 +1,50 @@
-<h1 align="center">E-Ticket API</h1>
-This is an E-Ticket API system. It's an API created where users can sell tickets for their events but it first has to be approved by the admin, and also where users can buy tickets for an event.
-Integrated Paystack payment API to handle payments, also made use of celery to handle background tasks.
+<h1 align="center">E-ticket System</h1>
+The E-Ticket System is an API designed to facilitate the sale and purchase of event tickets. This system allows event organizers to create and sell tickets, which must first be approved by the system administrator. Users can then easily browse and purchase tickets for upcoming events. 
 
-##  Language Used
-- python
+##  Features
+- Approval workflow for event tickets created by organizers
+- Integration with the Paystack payment API for secure online payments
+- Background task management using Celery
+- Automatic generation of PDF tickets with QR codes
+- QR code scanning for easy ticket validation 
+- Dockerized for easy deployment 
 
-##  Framework and Packages Used
-- Django
-- Django-Rest-Framework
-- Celery
-- Django-cors-headers
-- DjangoRestFramework-simplejwt
-- django-rest-swagger
-- drf-yasg
-- Django-allauth
+## Installation
+To install the E-Ticket System, ensure you have docker and docker compose installed then follow these steps:
 
-## Third party API Used
-- Paystack
+- Clone the repository to your local machine:
+```
+git clone https://github.com/Stonetech66/E-Ticket-System.git
+```
+- Cd into the directory 
+```
+cd E-Ticket-System
+```
+- Run the Docker Container
+```
+docker compose up
+```
+- Access the application in your browser 
+at `http://localhost:8000/`.
 
-## Live Project Link
-   You can find the documentation of the API here <link>https://e-ticket.onrender.com/
+## Usage
+To use the E-Ticket System, follow these steps:
 
+- Create an event as an organizer. This event will be subject to approval by the system administrator.
+- Once approved, users can browse and purchase tickets for the event.
+- Upon purchase, a PDF ticket will be generated containing a QR code.
+- At the event, the QR code can be scanned to validate the ticket
 
+## Credits
+The E-Ticket System was developed by `Livingstone Maxwell`.
 
+This project makes use of the following technologies:
 
-
+- Django web framework
+- Paystack payment API
+- Celery task queue
+- Pdfkit PDF generation library
+- django-rest-framework for building Rest APIs
+- django-filter for filtering APIs 
+- docker and docker compose for containerization 
 
