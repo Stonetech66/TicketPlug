@@ -41,6 +41,7 @@ def generate_qrcode(data):
 
 @shared_task
 def Create_Ticket(email, user_id, bought_ticket_id, payment):
+    def Create_Ticket(email, user_id, bought_ticket_id, payment):
     
     user=User.objects.get(id=user_id)
     bought_ticket=OrderTicket.objects.get(id=bought_ticket_id, status='completed')
@@ -58,7 +59,7 @@ def Create_Ticket(email, user_id, bought_ticket_id, payment):
                 j=SoldTicket.objects.create(user=user, payment=P, event=bought_ticket,ticket=p, key=key )
                 url=settings.ALLOWED_HOSTS[0] + str(reverse('verify-qrcode', kwargs={'key':key, 'event':event.id} )) 
                 qrcode=generate_qrcode(url)
-                context={'event':name, 'qrcode':qrcode, 'date':date, 'address':address, 'label':p.label} 
+                context={'event':name, 'data' :None, 'qrcode':qrcode, 'date':date, 'address':address, 'label':p.label} 
                 template= render_to_string('pdf.html', context)
                 pdf=generate_pdf(template)
                 subject='[TicketPlug] Purchased Tickets 🎉'
@@ -70,7 +71,7 @@ def Create_Ticket(email, user_id, bought_ticket_id, payment):
                 msg.attach(f'{name}_ticket.pdf', pdf)
                 msg.send()
     else: #send the tickets to the single email the user provided during payment
-        pdfs='' 
+        data=[] 
         for i in bought_ticket.tickets.all():
             for t in range(i.qty):
                 p=i.event_ticket
@@ -79,18 +80,18 @@ def Create_Ticket(email, user_id, bought_ticket_id, payment):
                 url=settings.ALLOWED_HOSTS[0] + str(reverse('verify-qrcode', kwargs={'key':key, 'event':event.id} )) 
                 qrcode=generate_qrcode(url)
                 context={'event':name, 'qrcode':qrcode, 'date':date, 'address':address, 'label':p.label} 
-                template= render_to_string('pdf.html', context)
-                pdf=generate_pdf(template)
-
-                pdfs.append(pdf)
+                data.append(context) 
+        html=render_to_string('pdf.html', {'data':data})      
         subject='[TicketPlug] Purchased Tickets 🎉'
         text_content='Thanks for Purchasing with Us \n' 
         html_context={'event':name, 'address':address, 'date':date } 
-        html_content=render_to_string('message.html', html_context)
+        html_content=render_to_string('multimessage.html', html_context)
         msg=EmailMultiAlternatives(subject, text_content, settings.EMAIL_HOST_USER, [email])
+        pdfs=generate_pdf(html)
         msg.attach_alternative(html_content, "text/html")
         msg.attach(f'{name}_ticket.pdf', pdfs)
         msg.send()
+        
         
 ''' 
 function to generate payment record and call the function to send tickets functions
@@ -99,17 +100,21 @@ if payment was sucessful
 @shared_task
 def Create_PaymentRecord(bought_ticket_id, amount, user_id, email):
         u=User.objects.get(id=user_id)
-        bought_ticket=OrderTicket.objects.get(id=bought_ticket_id, status='not completed')
-        bought_ticket.status = 'completed'
-        for i in bought_ticket.tickets.all():
+        ref_code=generate_ref_code()
+        try:
+         p=Payment.objects.create(user=u, amount=amount, ticket=bought_ticket, payment_id=ref_code)
+
+
+         bought_ticket=OrderTicket.objects.get(id=bought_ticket_id, status='not completed')
+         bought_ticket.status = 'completed'
+         for i in bought_ticket.tickets.all():
             i.event_ticket.sold += i.qty
             i.completed= True
             i.save()
-        bought_ticket.save()
-        ref_code=generate_ref_code()
-        p=Payment.objects.create(user=u, amount=amount, ticket=bought_ticket, payment_id=ref_code)
-        Create_Ticket(email=email, bought_ticket_id=bought_ticket_id, payment=p.id, user_id=user_id)
-
+         bought_ticket.save()
+         Create_Ticket(email=email, bought_ticket_id=bought_ticket_id, payment=p.id, user_id=user_id)
+        except Exception as e:
+            print(e) 
 '''
 function to be called if payment failed
 '''
