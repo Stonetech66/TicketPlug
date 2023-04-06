@@ -11,16 +11,16 @@
 			line-height: 1.6;
 			margin: 0;
 			padding: 0;
-			j
+			
 		}
 
 		.ticket {
 			position: relative;
-			width: 400px;
-			height: 200px;
+			width: 480px;
+			height: 250px;
 			margin: 30px auto;
 			background-color: black;
-			border: 2px solid #000;
+			border: 1px solid #FF7F50;
 			border-radius: 10px;
 			overflow: hidden;
 			display: flex;
@@ -29,6 +29,7 @@
 			justify-content: space-between;
 			padding: 20px;
 			box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+		page-break-after: always;
 		}
 
 		.event-info {
@@ -43,7 +44,7 @@
 		}
 
 		.event-name {
-			font-size: 28px;
+			font-size: 26px;
 			font-weight: bold;
 			margin-bottom: 5px;
 			color: #FF7F50;
@@ -74,8 +75,8 @@
 			position: absolute;
 			bottom: 20px;
 			right: 20px;
-			width: 70px;
-			height: 70px;
+			width: 90px;
+			height: 90px;
 			background-color: #FFF;
 			border: 2px solid #000;
 			border-radius: 5px;
@@ -106,14 +107,42 @@
 	</style>
 </head>
 <body>
+	{% if data == None %}
+		<div class="ticket">
+					<div class="vip-label">{{ label }}</div>
+							<div class="event-info">
+										<div class="event-name">{{ event }}</div>
+													<div class="event-date">{{ address }}</div>
+																<div class="event-location">{{ date }}</div>
+																			
+																						</div>
+																									<div class="qr-code"><img src="data:image/png;base64, {{ qrcode }} "></div>
+																									</div>
+	{% else %}
+{% for ticket in data %}
 	<div class="ticket">
-		<div class="vip-label">{{ label }}</div>
+		<div class="vip-label">{{ ticket.label }}</div>
 		<div class="event-info">
-			<div class="event-name">{{ event }}</div>
-			<div class="event-date">{{ address }}</div>
-			<div class="event-location">{{ date }}</div>
+			<div class="event-name">{{ ticket.event }}</div>
+			<div class="event-date">{{ ticket.address }}</div>
+			<div class="event-location">{{ ticket.date }}</div>
 			
 			</div>
-			<div class="qr-code"><img src="data:image/png;base64, {{ qrcode }} "></div>
-</body>
+			<div class="qr-code"><img src="data:image/png;base64, {{ ticket.qrcode }} "></div>
+</div>
+{% endfor %}
+{% endif %}
+		</body>
+<script>var eventName = document.getElementById("event-name");
+var eventNameLength = eventName.innerHTML.length;
+
+// adjust font size based on length of event name
+if (eventNameLength > 21) {
+  eventName.style.fontSize = "19px";
+  } else if (eventNameLength > 18) {
+    eventName.style.fontSize = "21px";
+	} else {
+	  eventName.style.fontSize = "26px";
+	  }
+	  </script>
 </html>
