@@ -82,8 +82,9 @@ class VerifyQrcode(APIView):
     def get(self, *args, **kwargs):
         event=self.kwargs['event']
         key= self.kwargs['key']
-        try:
-            ticket= SoldTicket.objects.get(event__id=event, key=key, is_used=False)
-            return Response({'valid':True})
+        try:        
+          ticket= SoldTicket.objects.select_related("ticket").get(ticket__event__id=event, key=key, used=False)
+          return Response({'valid':True, 'event':{"id":ticket.ticket.event.id,"name":ticket.ticket.event.name, 'label':ticket.ticket.label,}})
         except:
-            return Response({'valid':False} , status=status.HTTP_400_BAD_REQUEST) 
+           return Response({'valid':False}) 
+
