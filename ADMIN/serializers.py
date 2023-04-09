@@ -11,8 +11,3 @@ class AdminSettingSerializer(serializers.ModelSerializer):
 
 
 
-class  ContactForm(serializers.Serializer):
-    Firstname=serializers.CharField()
-    lastname=serializers.CharField()
-    email=serializers.EmailField()
-    message=serializers.CharField(min_length=10)
