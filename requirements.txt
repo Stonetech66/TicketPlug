@@ -1,3 +1,5 @@
+redis
+django-redis
 qrcode
 dj-rest-auth==3.0.0
 Django==3.2.16
