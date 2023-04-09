@@ -39,7 +39,7 @@ def generate_qrcode(data):
     
 
 
-@shared_task
+
 def Create_Ticket(email, user_id, bought_ticket_id, payment):
     def Create_Ticket(email, user_id, bought_ticket_id, payment):
     
@@ -107,10 +107,11 @@ def Create_PaymentRecord(bought_ticket_id, amount, user_id, email):
 
          bought_ticket=OrderTicket.objects.get(id=bought_ticket_id, status='not completed')
          bought_ticket.status = 'completed'
-         for i in bought_ticket.tickets.all():
-            i.event_ticket.sold += i.qty
-            i.completed= True
-            i.save()
+         for ticket in bought_ticket.tickets.all():
+              ticket.event_ticket.sold +=  i.qty
+              ticket.event_ticket.save()
+              ticket.completed= True
+              ticket.save()
          bought_ticket.save()
          Create_Ticket(email=email, bought_ticket_id=bought_ticket_id, payment=p.id, user_id=user_id)
         except Exception as e:
@@ -118,14 +119,11 @@ def Create_PaymentRecord(bought_ticket_id, amount, user_id, email):
 '''
 function to be called if payment failed
 '''
-#@shared_task
+@shared_task
 def PaymentFailed(bought_ticket_id, amount, user_id, email):
         u=User.objects.get(id=user_id)
-        bought_ticket=OrderTicket.objects.get(id=bought_ticket_id, status='not completed')
-        for i in bought_ticket.tickets.all():
-            i.delete()
-            i.save()
-
+        OrderTicket.objects.get(id=bought_ticket_id, status='not completed').tickets.delete()
+        
 
 
 
