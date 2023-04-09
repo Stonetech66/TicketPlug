@@ -38,7 +38,7 @@ class Makepayment(APIView):
                 price=j.get_total_price()
                 user=str(self.request.user.id)
                 email=serializer.validated_data.get('email')
-                u_e=str(self.request.user.email)
+                user_email=str(self.request.user.email)
                 if price == 0:
                      create_payment_record.delay(amount=price, email=email, user_id=user, bought_ticket_id=p)
                      return Response({"message" :"checkout successful, check your email to find your tickets"}) 
@@ -46,7 +46,7 @@ class Makepayment(APIView):
                   url='https://api.paystack.co/transaction/initialize'
                   header={'authorization': f'Bearer {settings.PAYSTACK_SECRET_KEY}'}
                   try:
-                    resp=requests.post(url, timeout=100, headers=header, json={'amount':price*10, 'email':u_e, 'metadata':{'user_id':str(user), 'bought_ticket_id':str(p), 'price':price,'email':email, },})
+                    resp=requests.post(url, timeout=100, headers=header, json={'amount':price*100, 'email':user_email, 'metadata':{'user_id':str(user), 'bought_ticket_id':str(p), 'price':price,'email':email, },})
                     return Response(resp.json())
                   except Exception as e:
                     return Response({'error': f'{e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
