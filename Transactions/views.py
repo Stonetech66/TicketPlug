@@ -4,8 +4,7 @@ from .serializers import PaymentSErializer, CheckoutSerializer
 from rest_framework.views import APIView
 import requests
 from django.conf import settings
-from .tasks import Create_PaymentRecord, PaymentFailed
-from rest_framework.response import Response
+from .tasks import create_payment_record, payment_failed
 from rest_framework.response import Response
 
 # Create your views here.
@@ -41,7 +40,7 @@ class Makepayment(APIView):
                 email=serializer.validated_data.get('email')
                 u_e=str(self.request.user.email)
                 if price == 0:
-                     Create_PaymentRecord(amount=price, email=email, user_id=user, bought_ticket_id=p)
+                     create_payment_record.delay(amount=price, email=email, user_id=user, bought_ticket_id=p)
                      return Response({"message" :"checkout successful, check your email to find your tickets"}) 
                 else:    
                   url='https://api.paystack.co/transaction/initialize'
@@ -63,14 +62,14 @@ class PayStack_Webhook(APIView):
             bought_ticket=c['data']['metadata']['bought_ticket_id']
             price=c['data']['metadata']['price']
             email=c['data']['metadata']['email']
-            Create_PaymentRecord(amount=price, email=email, user_id=user_id, bought_ticket_id=bought_ticket)
+            create_payment_record(amount=price, email=email, user_id=user_id, bought_ticket_id=bought_ticket)
 
         elif c['event'] =='charge.failed':
             user_id=c['data']['metadata']['user_id']
             bought_ticket=c['data']['metadata']['bought_ticket_id']
             price=c['data']['metadata']['price']
             email=c['data']['metadata']['email']
-            PaymentFailed(amount=price, email=email, user_id=user_id, bought_ticket_id=bought_ticket)
+            payment_failed(amount=price, email=email, user_id=user_id, bought_ticket_id=bought_ticket)
 
             
         return Response(status=status.HTTP_200_OK)
