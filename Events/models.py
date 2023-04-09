@@ -98,12 +98,13 @@ class BuyTicket(models.Model):
 
 
 
-Order_Status=[ 
-    ('completed', 'completed'),
-    ('not completed', 'not completed')
-]
+
 
 class OrderTicket(models.Model):
+    Order_Status=[ 
+    ('completed', 'completed'),
+    ('not completed', 'not completed')]
+
     id=models.UUIDField(default=uuid.uuid4,editable=False, primary_key=True )
     event=models.ForeignKey(Event, on_delete=models.SET_NULL, null=True, related_name='event_orders')
     user=models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_orders', null=True)
