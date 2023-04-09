@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.postgres',
     'rest_framework',
-        'corsheaders',
+    'corsheaders',
     'dj_rest_auth',
     'allauth',
     'allauth.account',
@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework_swagger',
     'drf_yasg',
-        'cloudinary',
+    'cloudinary',
     'Users.apps.UsersConfig',
     'Events.apps.EventsConfig',
     'ADMIN.apps.AdminConfig',
@@ -69,8 +69,8 @@ ACCOUNT_EMAIL_REQUIRED= True
 CORS_ALLOW_ALL_ORIGINS=True
 ACCOUNT_USERNAME_REQUIRED=False
 ACCOUNT_USER_MODEL_USERNAME_FIELD=None
-CELERY_BROKER_URL='ampq://guest:guest@rabbitmq:5672//'
-CELERY_RESULT_BACKEND='ampq://guest:guest@rabbitmq:5672//'
+CELERY_BROKER_URL=config('CELERY_BROKER_URL') 
+CELERY_RESULT_BACKEND=config('CELERY_RESULT_BACKEND')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -86,8 +86,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'Event_Project.urls'
 REST_AUTH_TOKEN_MODEL=None
-DJANGO_SUPERUSER_PASSWORD=config('DJANGO_SUPERUSER_PASSWORD') 
-DJANGO_SUPERUSER_EMAIL=config('DJANGO_SUPERUSER_EMAIL') 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -122,19 +120,14 @@ DATABASES = {
 
     }
  }
+
 #DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME':BASE_DIR /"db2.sqlite3",
+#        'NAME':BASE_DIR /"db.sqlite3",
 #
 #    }
 #}
-# ELASTICSEARCH_DSL= {
-#     'default': {
-#         'hosts' : 'https://my-deployment-5a0969.es.us-central1.gcp.cloud.es.io'
-#     }
-# }
-
 
 
 # Password validation
@@ -218,13 +211,13 @@ REST_FRAMEWORK= {
 REST_AUTH={
     "USER_DETAILS_SERIALIZER":'Users.serializers.UserDetailSerializer', 
     "REGISTER_SERIALIZER":'Users.serializers.RegisterSerializer', 
-"TOKEN_MODEL" :None, 
-"JWT_AUTH_COOKIE" :'e-ticket-access-cookie', 
-"JWT_AUTH_REFRESH_COOKIE" : 'e-ticket-refresh-cookie', 
- "USE_JWT": True, 
+    "TOKEN_MODEL" :None, 
+    "JWT_AUTH_COOKIE" :'e-ticket-access-cookie', 
+    "JWT_AUTH_REFRESH_COOKIE" : 'e-ticket-refresh-cookie', 
+    "USE_JWT": True, 
     'PASSWORD_RESET_USE_SITES_DOMAIN': True,
     'OLD_PASSWORD_FIELD_ENABLED': True, 
-"LOGIN_SERIALIZER" :'Users.serializers.LoginSerializer'
+    "LOGIN_SERIALIZER" :'Users.serializers.LoginSerializer'
 }
 
 from datetime import timedelta
@@ -233,14 +226,13 @@ SIMPLE_JWT={
     'REFRESH_TOKEN_LIFETIME':timedelta(days=14), 
     'SIGNING_KEY':config('SIGNING_KEY')
 }
-# CACHES= {
-#     'default': { 
-#         'BACKEND':
-#         'django.core.cache.backends.db.DatabaseCache',
-#     'LOCATION':'my_cache_table'
-#     }
-# }
-DEFAULT_FROM_EMAIL='noreply@example.com'
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": config("REDIS_CACHE_URL"),
+    }
+}
+DEFAULT_FROM_EMAIL='TicketPlug@gmail.com'
 ACCOUNT_ADAPTER='Event_Project.adapter.CustomAdapter'
 FRONTEND_URL=config('FRONTEND_URL')
 
