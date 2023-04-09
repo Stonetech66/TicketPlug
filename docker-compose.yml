@@ -1,10 +1,11 @@
 version: '3'
 
 services:
-  e-ticket:
+  ticket-plug:
+    restart: unless-stopped
     depends_on:
       - db
-      - rabbitmq
+      - redis
     build: .
     ports:
       - 8000:8000
@@ -24,17 +25,15 @@ services:
   worker:
     restart: unless-stopped
     depends_on:
-      - rabbitmq
+      - redis
     build: .
     command: sh -c "sh worker.sh"
 
-  rabbitmq:
-    image: rabbitmq:3.11.9-alpine
-    ports:
-      - 5672:5672
+  redis:
+    image: redis:alpine
     volumes:
-      - rabbitmqdata:/var/lib/rabbitmq
+      - redisdata:/data
 
 volumes:
   postgresdb:
-  rabbitmqdata:
+  redisdata:
