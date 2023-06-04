@@ -1,5 +1,5 @@
 <h1 align="center">TicketPlug</h1>
-TicketPlug is a user-friendly E-Ticket API that simplifies the process of creating, managing, and selling event tickets. With TicketPlug, event organizers can effortlessly create and sell tickets, which undergo approval by the system admin. Attendees can easily browse and purchase tickets for upcoming events using the API and receive automatic PDF tickets with QR codes. TicketPlug incorporates Paystack payment API and Celery for background task management.
+TicketPlug is a robust backend system for an online ticketing platform that simplifies the process of creating, managing, and selling event tickets. With TicketPlug, event organizers can effortlessly create and sell tickets, which undergo approval by the system admin. Attendees can easily browse and purchase tickets for upcoming events using the API and receive automatic PDF tickets with QR codes. TicketPlug incorporates Paystack payment API and Celery for background task management.
 
 
 
