@@ -15,9 +15,6 @@ drf-yasg==1.21.3
 psycopg2-binary==2.9.3
 django-rest-swagger==2.2.0
 dj-database-url==1.0.0
-elasticsearch
-elasticsearch-dsl
-django-elasticsearch-dsl
 requests==2.26.0
 python-decouple==3.6
 celery==5.2.7

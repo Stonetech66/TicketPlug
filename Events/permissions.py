@@ -1,10 +1,5 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-# class IsSuper(BasePermission):
-#     def has_object_permission(self, request, obj, view):
-#         if request.method in permissions.SAFE_METHOD:
-#             return True
-#         return request.user.is_superuser 
 
 class IsAdminorReadOnly(BasePermission):
     def has_permission(self, request, view ):

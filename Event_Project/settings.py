@@ -14,6 +14,9 @@ import os
 from pathlib import Path
 
 from django.conf import settings
+import cloudinary
+import cloudinary.api
+import cloudinary.uploader
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -30,7 +33,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG =config('DEBUG',cast=bool) 
 host=os.environ.get('RENDER_EXTERNAL_URL')
 
-ALLOWED_HOSTS = ['e-ticket.onrender.com']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -71,6 +74,8 @@ ACCOUNT_USERNAME_REQUIRED=False
 ACCOUNT_USER_MODEL_USERNAME_FIELD=None
 CELERY_BROKER_URL=config('CELERY_BROKER_URL') 
 CELERY_RESULT_BACKEND=config('CELERY_RESULT_BACKEND')
+DJANGO_SUPERUSER_EMAIL=config('SUPERUSER_EMAIL')
+DJANGO_SUPERUSER_PASSWORD=config('SUPERUSER_PASSWORD')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -212,8 +217,8 @@ REST_AUTH={
     "USER_DETAILS_SERIALIZER":'Users.serializers.UserDetailSerializer', 
     "REGISTER_SERIALIZER":'Users.serializers.RegisterSerializer', 
     "TOKEN_MODEL" :None, 
-    "JWT_AUTH_COOKIE" :'e-ticket-access-cookie', 
-    "JWT_AUTH_REFRESH_COOKIE" : 'e-ticket-refresh-cookie', 
+    "JWT_AUTH_COOKIE" :'ticket-plug-access-cookie', 
+    "JWT_AUTH_REFRESH_COOKIE" : 'ticket-plug-refresh-cookie', 
     "USE_JWT": True, 
     'PASSWORD_RESET_USE_SITES_DOMAIN': True,
     'OLD_PASSWORD_FIELD_ENABLED': True, 
@@ -226,12 +231,7 @@ SIMPLE_JWT={
     'REFRESH_TOKEN_LIFETIME':timedelta(days=14), 
     'SIGNING_KEY':config('SIGNING_KEY')
 }
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": config("REDIS_CACHE_URL"),
-    }
-}
+
 DEFAULT_FROM_EMAIL='TicketPlug@gmail.com'
 ACCOUNT_ADAPTER='Event_Project.adapter.CustomAdapter'
 FRONTEND_URL=config('FRONTEND_URL')
@@ -242,9 +242,8 @@ SWAGGER_SETTINGS={
 }
 SESSION_COOKIE_SECURE=True
 CSRF_COOKIE_SECURE=True
-import cloudinary
-import cloudinary.api
-import cloudinary.uploader
+
+
 cloudinary.config( 
   cloud_name = config('CLOUD_NAME'), 
   api_key = config('CLOUD_API_KEY') , 

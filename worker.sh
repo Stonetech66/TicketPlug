@@ -1,7 +1,7 @@
-#!/usr/bin/env bash
-set -e
+#!/bin/sh
 
-cd /app
+set -e
+cd /app/
 
 echo " starting celery worker"
-celery - A Event_Project worker -l info -c $NO_WORKER
+celery -A Event_Project worker -l info -c 1

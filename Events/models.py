@@ -7,20 +7,17 @@ from django.core.exceptions import ValidationError
 class Category(models.Model):
     name=models.CharField(max_length=50, unique=True, primary_key=True)
 
-
     class Meta:
         verbose_name_plural= "categories"
         ordering=["name"]
     def __str__(self): 
         return self.name
     
-
-
     def clean(self, *args, **kwargs):
-        c=Category.objects.filter(name__iexact=self.name)
-        if c.exists():
+        category=Category.objects.filter(name__iexact=self.name)
+        if category.exists():
             raise ValidationError({'name':'category with this name already exists'})
-        return c
+        return category
     
 
 
@@ -51,8 +48,8 @@ class Event(models.Model):
 
     def total_tickets_sold(self)-> int:
         total=0
-        for i in self.event_fees.all():
-            total += i.sold
+        for ticket in self.event_fees.all():
+            total += ticket.sold
         return total
     
  
@@ -90,7 +87,6 @@ class BuyTicket(models.Model):
     order=models.ForeignKey('OrderTicket', on_delete=models.CASCADE, related_name='tickets')
     date=models.DateTimeField(auto_now_add=True)
     completed=models.BooleanField(default=False)
-
 
 
     def get_total_ticket_price(self):

@@ -5,9 +5,9 @@ from .models import Category, Event, BuyTicket, OrderTicket, TicketPrice, Trendi
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.urls import reverse
-from django.core.exceptions import ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
-import uuid
+import pytz
+from datetime import datetime, timedelta
 
 
 
@@ -24,12 +24,12 @@ class EventView(generics.ListAPIView):
 
 
     def get_queryset(self):
-        return Event.objects.filter(approved=True).select_related('user').prefetch_related('event_fees')
+        return Event.objects.filter(approved=True, end_date__gt=datetime.now(tz=pytz.timezone('UTC'))-timedelta(hours=1)).select_related('user').prefetch_related('event_fees')
 
 
 class EventCreateView(generics.CreateAPIView):
     '''
-    endpoint to Create a event 
+    endpoint to create an event 
     
     '''
     serializer_class=EventCreateSerializer
@@ -69,6 +69,7 @@ class RemoveTicketView(APIView):
             return Response({"message": "success"}, status=status.HTTP_204_NO_CONTENT)
         except:
             return Response({"message":"ticket dosent exists or ticket not added"}, status=status.HTTP_400_BAD_REQUEST)
+        
 class BuyTicketView(APIView):
 
     serializer_class= BuyTicketSerializer
@@ -81,16 +82,15 @@ class BuyTicketView(APIView):
         serializer=self.serializer_class(data=request.data)
         if serializer.is_valid(raise_exception=True):
                     user=self.request.user
-                # if user == None:
                     event_ticket=self.kwargs["event"]
                     qty=serializer.validated_data.get('qty')
                     emails=serializer.validated_data.get('emails')
                     try:
                         ticket=TicketPrice.objects.get(id=event_ticket)
                         if ticket.get_tickets_available() == 0:
-                            return Response({'error':'Ticket sold out'}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({'error':'tickets sold out'}, status=status.HTTP_400_BAD_REQUEST)
                         elif ticket.get_tickets_available() < qty:
-                            return Response({'error':'Tickets available not up to this qty'}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({'error':'tickets available not up to this qty'}, status=status.HTTP_400_BAD_REQUEST)
 
                     except:
                         return Response({'error':'This ticket cant be found'}, status=status.HTTP_404_NOT_FOUND)
@@ -103,10 +103,7 @@ class BuyTicketView(APIView):
                     except:
                         c=BuyTicket.objects.create(user=user, event_ticket=ticket, qty=qty, emails=emails, order=order)
                     return Response({"payment-link":reverse('payment', kwargs={'pk':order.id}), 'amount_to_pay':order.get_total_price()})
-                # else:
-                #     cookie=request.COOKIE.get('AnonymousOrder')
-                #     if cookie == None or cookie=='':
-                #         o=OrderTicket.objects.create(id= uuid.uui4(),  )
+
 
 
 

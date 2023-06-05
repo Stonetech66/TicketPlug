@@ -1,11 +1,17 @@
-#!/usr/bin/env bash
+#!/bin/sh
+
 set -e
 cd /app
+
+
 echo "starting migrations"
 python manage.py makemigrations
-python manage.py migrate --noinput
 
-echo "collecting staticfiles"
+echo "creating superuser"
+
+python manage.py createsuperuser --noinput | | true
+
+echo "collecting server"
 
 python manage.py collectstatic --noinput
 

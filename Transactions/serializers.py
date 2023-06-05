@@ -13,5 +13,4 @@ class CheckoutSerializer(serializers.Serializer):
     event= serializers.CharField(source="event.name", read_only=True)
     tickets= TicketSerializer(read_only=True, many=True,)
     total= serializers.FloatField(source="get_total_price", read_only=True)
-# class WithdrawSerializer(serializers.Serializer):
-#     amount=serializers.FloatField()
+

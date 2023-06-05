@@ -69,9 +69,7 @@ class PayStack_Webhook(APIView):
             bought_ticket=c['data']['metadata']['bought_ticket_id']
             price=c['data']['metadata']['price']
             email=c['data']['metadata']['email']
-            payment_failed(amount=price, email=email, user_id=user_id, bought_ticket_id=bought_ticket)
-
-            
+            payment_failed(amount=price, email=email, user_id=user_id, bought_ticket_id=bought_ticket)      
         return Response(status=status.HTTP_200_OK)
 
 
