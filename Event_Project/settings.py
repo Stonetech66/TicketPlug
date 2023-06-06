@@ -59,7 +59,7 @@ INSTALLED_APPS = [
     'cloudinary',
     'Users.apps.UsersConfig',
     'Events.apps.EventsConfig',
-    'ADMIN.apps.AdminConfig',
+    'Admin.apps.AdminConfig',
     'Transactions.apps.TransactionsConfig',
    
 
@@ -74,12 +74,11 @@ ACCOUNT_USERNAME_REQUIRED=False
 ACCOUNT_USER_MODEL_USERNAME_FIELD=None
 CELERY_BROKER_URL=config('CELERY_BROKER_URL') 
 CELERY_RESULT_BACKEND=config('CELERY_RESULT_BACKEND')
-DJANGO_SUPERUSER_EMAIL=config('SUPERUSER_EMAIL')
-DJANGO_SUPERUSER_PASSWORD=config('SUPERUSER_PASSWORD')
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -114,25 +113,25 @@ WSGI_APPLICATION = 'Event_Project.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 
+# DATABASES = {
+#      'default': {
+#          'ENGINE': 'django.db.backends.postgresql',
+#          'USER': config('POSTGRES_USER'),
+#          'NAME':config('POSTGRES_NAME'), 
+#          'PASSWORD':config('POSTGRES_PASSWORD'),
+#          'HOST': 'db',
+#          'PORT': 5432, 
+
+#     } 
+#  }
+
 DATABASES = {
-     'default': {
-         'ENGINE': 'django.db.backends.postgresql',
-         'USER': config('POSTGRES_USER'),
-         'NAME':config('POSTGRES_NAME'), 
-         'PASSWORD':config('POSTGRES_PASSWORD'),
-         'HOST': 'db',
-         'PORT': 5432,
+   'default': {
+       'ENGINE': 'django.db.backends.sqlite3',
+       'NAME':BASE_DIR /"db.sqlite3",
 
-    }
- }
-
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME':BASE_DIR /"db.sqlite3",
-#
-#    }
-#}
+   }
+}
 
 
 # Password validation

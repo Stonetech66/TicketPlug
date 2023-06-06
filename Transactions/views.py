@@ -1,4 +1,4 @@
-from Events.models import OrderTicket, BuyTicket
+from Events.models import OrderTicket
 from rest_framework import generics, status
 from .serializers import PaymentSErializer, CheckoutSerializer
 from rest_framework.views import APIView
@@ -30,17 +30,17 @@ class Makepayment(APIView):
 
     def post(self, *args, **kwargs):
         serializer=self.serializer_class(data=self.request.data)
-        p=self.kwargs['pk']
-        j=OrderTicket.objects.filter(user=self.request.user, id=p, status='not completed')
-        if j.exists():
+        pk=self.kwargs['pk']
+        order=OrderTicket.objects.filter(user=self.request.user, id=pk, status='not completed')
+        if order.exists():
             if serializer.is_valid(raise_exception=True):
-                j=j.last()
-                price=j.get_total_price()
+                order=order.last()
+                price=order.get_total_price()
                 user=str(self.request.user.id)
                 email=serializer.validated_data.get('email')
                 user_email=str(self.request.user.email)
                 if price == 0:
-                     create_payment_record.delay(amount=price, email=email, user_id=user, bought_ticket_id=p)
+                     create_payment_record.delay(amount=price, email=email, user_id=user, bought_ticket_id=pk)
                      return Response({"message" :"checkout successful, check your email to find your tickets"}) 
                 else:    
                   url='https://api.paystack.co/transaction/initialize'
@@ -56,19 +56,19 @@ class PayStack_Webhook(APIView):
     permission_classes=[]
     swagger_schema=None
     def post(self,request, *args, **kwargs):
-        c=request.data
-        if c['event']== 'charge.success':
-            user_id=c['data']['metadata']['user_id']
-            bought_ticket=c['data']['metadata']['bought_ticket_id']
-            price=c['data']['metadata']['price']
-            email=c['data']['metadata']['email']
+        data=request.data
+        if data['event']== 'charge.success':
+            user_id=data['data']['metadata']['user_id']
+            bought_ticket=data['data']['metadata']['bought_ticket_id']
+            price=data['data']['metadata']['price']
+            email=data['data']['metadata']['email']
             create_payment_record(amount=price, email=email, user_id=user_id, bought_ticket_id=bought_ticket)
 
-        elif c['event'] =='charge.failed':
-            user_id=c['data']['metadata']['user_id']
-            bought_ticket=c['data']['metadata']['bought_ticket_id']
-            price=c['data']['metadata']['price']
-            email=c['data']['metadata']['email']
+        elif data['event'] =='charge.failed':
+            user_id=data['data']['metadata']['user_id']
+            bought_ticket=data['data']['metadata']['bought_ticket_id']
+            price=data['data']['metadata']['price']
+            email=data['data']['metadata']['email']
             payment_failed(amount=price, email=email, user_id=user_id, bought_ticket_id=bought_ticket)      
         return Response(status=status.HTTP_200_OK)
 

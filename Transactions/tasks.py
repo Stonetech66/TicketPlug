@@ -97,10 +97,8 @@ def create_payment_record(bought_ticket_id, amount, user_id, email):
         user=User.objects.get(id=user_id)
         ref_code=generate_ref_code()
         try:
-         payment=Payment.objects.create(user=user, amount=amount, ticket=bought_ticket, payment_id=ref_code)
-
-
          bought_ticket=OrderTicket.objects.get(id=bought_ticket_id, status='not completed')
+         payment=Payment.objects.create(user=user, amount=amount, ticket=bought_ticket, payment_id=ref_code)
          bought_ticket.status = 'completed'
          for ticket in bought_ticket.tickets.all():
               ticket.event_ticket.sold +=  ticket.qty
@@ -108,7 +106,7 @@ def create_payment_record(bought_ticket_id, amount, user_id, email):
               ticket.completed= True
               ticket.save()
          bought_ticket.save()
-         create_ticket(email=email, bought_ticket_id=bought_ticket_id, payment=payment.id, user_id=user_id)
+         create_ticket(email=email, bought_ticket_id=bought_ticket_id, payment_id=payment.id, user_id=user_id)
         except Exception as e:
             print(e) 
 '''

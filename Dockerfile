@@ -2,19 +2,15 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY requirements.txt /app
-
-RUN pip install --upgrade pip 
-
-
-COPY . /app
-
+COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
+RUN apt-get update -y && apt-get -y install wkhtmltopdf 
 
+COPY . /app/
 
-RUN chmod +x /app/server.sh \
-    && chmod +x /app/worker.sh
+RUN chmod +x server.sh && chmod +x worker.sh
+
 
 

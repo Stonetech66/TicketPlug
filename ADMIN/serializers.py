@@ -1,13 +1,9 @@
 from rest_framework import serializers
-from .models import AdminSetting
+from Events.models import Event
 
-class AdminSettingSerializer(serializers.ModelSerializer):
+
+
+class ApproveEventSerializer(serializers.ModelSerializer):
     class Meta:
-        model=AdminSetting
-        fields=[ 
-            'header_image',
-            'payment_charge'
-        ]
-
-
-
+        model=Event
+        fields=['approved']

@@ -2,24 +2,10 @@ from django.db import models
 from Users.models import User
 import uuid
 from Events.models import OrderTicket, TicketPrice
-from ADMIN.models import AdminSetting
 
 
-# status=[
-#     ('requested', 'requested'),
-#     ('completed','completed')
-# ]
 
 
-# class Withdrawal(models.Model):
-#     uid=models.UUIDField(default=uuid.uuid4, editable=False)
-#     date=models.DateTimeField(auto_now=True)
-#     user=models.ForeignKey(User, on_delete=models.SET_NULL, null=True,related_name='user_withdrawals')
-#     amount=models.FloatField()
-#     status=models.CharField(choices=status, max_length=40, default='requested')
-
-#     def __str__(self):
-#         return self.user.username
 
 
 

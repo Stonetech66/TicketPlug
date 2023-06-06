@@ -6,6 +6,8 @@ from rest_framework import serializers
 from dj_rest_auth.serializers import PasswordResetSerializer
 from allauth.account import models
 from django.contrib.auth import authenticate 
+
+
 class EventTicketSerializer(serializers.Serializer):
     event=serializers.StringRelatedField(read_only=True)
     label=serializers.CharField(read_only=True)

@@ -45,7 +45,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f"{self.first_name} {self.last_name}"
     
     def __str__(self):
-        return self.email
+        return str(self.id)
 
     def get_total_amount_earned(self):
         c=Transactions.models.Payment.objects.filter(ticket__event__user=self)

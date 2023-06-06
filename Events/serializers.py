@@ -49,7 +49,7 @@ class EventCreateSerializer(serializers.ModelSerializer):
         return attrs
 
 class EventSerializer(serializers.Serializer):
-    user=serializers.CharField(read_only=True)
+    user=serializers.StringRelatedField(read_only=True)
     id=serializers.UUIDField(read_only=True)
     name=serializers.CharField(read_only=True)
     country=serializers.CharField(read_only=True)
@@ -68,12 +68,15 @@ class EventSerializer(serializers.Serializer):
 
 
 class BuyTicketSerializer(serializers.Serializer):
-    qty=serializers.IntegerField()
+    qty=serializers.IntegerField(min_value=1)
     emails=serializers.ListField(child=serializers.EmailField(), required=False)
 
     def validate(self, attrs):
-            if attrs['emails'] == None:
-                 attrs['emails'] = [] 
+            if not attrs.get('emails'):
+                user=self.context.get('request').user
+                emails=[user.email for i in range(attrs.get('qty'))]
+                attrs.update({'emails':emails})
+                return attrs
             elif len(attrs['emails']) != attrs['qty']:
                     raise serializers.ValidationError('incomplete emails provided, qty and emails dont match')
             return attrs
@@ -84,9 +87,9 @@ class CategorySerializer(serializers.Serializer):
     slug=serializers.SlugField(read_only=True)
 
     def validate(self, attrs):
-        c=attrs['name']
-        p=Category.objects.filter(name__iexact=c)
-        if p.exists():
+        name=attrs['name']
+        category=Category.objects.filter(name__iexact=name)
+        if category.exists():
             raise serializers.ValidationError({'name':'category with this name already exists'})
         return attrs
 

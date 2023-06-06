@@ -24,7 +24,7 @@ class EventView(generics.ListAPIView):
 
 
     def get_queryset(self):
-        return Event.objects.filter(approved=True, end_date__gt=datetime.now(tz=pytz.timezone('UTC'))-timedelta(hours=1)).select_related('user').prefetch_related('event_fees')
+        return Event.objects.filter(approved=True, end_date__gt=datetime.now(tz=pytz.timezone('UTC'))-timedelta(minutes=30)).select_related('user').prefetch_related('event_fees')
 
 
 class EventCreateView(generics.CreateAPIView):
@@ -79,14 +79,14 @@ class BuyTicketView(APIView):
 
     def post(self, request, *args, **kwargs):
 
-        serializer=self.serializer_class(data=request.data)
+        serializer=self.serializer_class(data=request.data, context={'request': request})
         if serializer.is_valid(raise_exception=True):
                     user=self.request.user
-                    event_ticket=self.kwargs["event"]
+                    ticket_id=self.kwargs["ticket_id"]
                     qty=serializer.validated_data.get('qty')
                     emails=serializer.validated_data.get('emails')
                     try:
-                        ticket=TicketPrice.objects.get(id=event_ticket)
+                        ticket=TicketPrice.objects.get(id=ticket_id)
                         if ticket.get_tickets_available() == 0:
                             return Response({'error':'tickets sold out'}, status=status.HTTP_400_BAD_REQUEST)
                         elif ticket.get_tickets_available() < qty:
@@ -96,12 +96,12 @@ class BuyTicketView(APIView):
                         return Response({'error':'This ticket cant be found'}, status=status.HTTP_404_NOT_FOUND)
                     order, created=OrderTicket.objects.get_or_create(user=request.user, status='not completed' , event=ticket.event)
                     try:
-                        c=BuyTicket.objects.get(user=user, event_ticket=ticket, completed=False, order=order)
-                        c.qty=qty
-                        c.emails=emails
-                        c.save()
+                        ticket=BuyTicket.objects.get(user=user, event_ticket=ticket, completed=False, order=order)
+                        ticket.qty=qty
+                        ticket.emails=emails
+                        ticket.save()
                     except:
-                        c=BuyTicket.objects.create(user=user, event_ticket=ticket, qty=qty, emails=emails, order=order)
+                        ticket=BuyTicket.objects.create(user=user, event_ticket=ticket, qty=qty, emails=emails, order=order)
                     return Response({"payment-link":reverse('payment', kwargs={'pk':order.id}), 'amount_to_pay':order.get_total_price()})
 
 

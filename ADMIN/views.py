@@ -1,16 +1,13 @@
 from django.shortcuts import render
 from Events.permissions import IsAdmin
 from rest_framework import generics, permissions
+from .serializers import ApproveEventSerializer
+from Events.models import Event
 
-from ADMIN.models import AdminSetting
 
-from .serializers import AdminSettingSerializer
-# Create your views here.
 
-class AdminSettings(generics.RetrieveUpdateAPIView):
-    serializer_class=AdminSettingSerializer
+
+class UpdateEventstatus(generics.UpdateAPIView):
+    serializer_class=ApproveEventSerializer
     permission_classes=[permissions.IsAuthenticated, IsAdmin]
-
-    def get_object(self):
-        return AdminSetting.objects.last()
-
+    queryset=Event.objects.all()

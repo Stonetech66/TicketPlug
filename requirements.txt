@@ -24,3 +24,4 @@ celery==5.2.7
 django-filter==22.1
 cloudinary
 pdfkit
+tzdata
