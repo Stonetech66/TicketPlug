@@ -3,7 +3,7 @@ from Events.models import Event
 from Events.serializers import EventSerializer
 from .models import User
 from rest_framework import serializers
-from dj_rest_auth.serializers import PasswordResetSerializer
+from dj_rest_auth.serializers import PasswordResetSerializer, LoginSerializer
 from allauth.account import models
 from django.contrib.auth import authenticate 
 
@@ -119,13 +119,14 @@ class RegisterSerializer(serializers.Serializer):
             raise serializers.ValidationError('user with this email already exists') 
         user=User.objects.create_user(email=email,first_name=first_name,last_name=last_name, password=password)
         return user
-class LoginSerializer(serializers.Serializer):
+     
+
+class LoginSerializer(LoginSerializer):
+    username=None
     email=serializers.EmailField()
-    password=serializers.CharField()
 
     def validate(self, attrs):
-       user=authenticate(email=attrs['email'], password=attrs['password']) 
-       if user ==None:
-           raise serializers.ValidationError('invalid email or password') 
-       return attrs
+        attrs= super().validate(attrs)
+        
+        return attrs
        

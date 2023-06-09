@@ -5,4 +5,4 @@ cd /app/
 
 echo "starting celery >>>"
 
-celery -A Event_Project worker -l info -c 1
+celery -A Event_Project worker -l info -c 2

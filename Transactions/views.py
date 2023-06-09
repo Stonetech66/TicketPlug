@@ -36,11 +36,11 @@ class Makepayment(APIView):
             if serializer.is_valid(raise_exception=True):
                 order=order.last()
                 price=order.get_total_price()
-                user=str(self.request.user.id)
+                user_id=str(self.request.user.id)
                 email=serializer.validated_data.get('email')
                 user_email=str(self.request.user.email)
                 if price == 0:
-                     create_payment_record.delay(amount=price, email=email, user_id=user, bought_ticket_id=pk)
+                     create_payment_record.delay(amount=price, email=email, user_id=user_id, bought_ticket_id=pk)
                      return Response({"message" :"checkout successful, check your email to find your tickets"}) 
                 else:    
                   url='https://api.paystack.co/transaction/initialize'

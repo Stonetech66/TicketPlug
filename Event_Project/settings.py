@@ -31,7 +31,7 @@ SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG =config('DEBUG',cast=bool) 
-host=os.environ.get('RENDER_EXTERNAL_URL')
+
 
 ALLOWED_HOSTS = ['*']
 
@@ -76,6 +76,8 @@ CELERY_BROKER_URL=config('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND=config('CELERY_RESULT_BACKEND')
 
 
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -113,25 +115,25 @@ WSGI_APPLICATION = 'Event_Project.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 
-# DATABASES = {
-#      'default': {
-#          'ENGINE': 'django.db.backends.postgresql',
-#          'USER': config('POSTGRES_USER'),
-#          'NAME':config('POSTGRES_NAME'), 
-#          'PASSWORD':config('POSTGRES_PASSWORD'),
-#          'HOST': 'db',
-#          'PORT': 5432, 
-
-#     } 
-#  }
-
 DATABASES = {
-   'default': {
-       'ENGINE': 'django.db.backends.sqlite3',
-       'NAME':BASE_DIR /"db.sqlite3",
+     'default': {
+         'ENGINE': 'django.db.backends.postgresql',
+         'USER': config('POSTGRES_USER'),
+         'NAME':config('POSTGRES_NAME'), 
+         'PASSWORD':config('POSTGRES_PASSWORD'),
+         'HOST': 'db',
+         'PORT': 5432, 
 
-   }
-}
+    } 
+ }
+
+# DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME':BASE_DIR /"db.sqlite3",
+
+#    }
+# }
 
 
 # Password validation

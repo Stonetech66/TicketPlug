@@ -6,10 +6,9 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-RUN apt-get update -y && apt-get -y install wkhtmltopdf 
 
 COPY . /app/
-
+ENV PYTHONUNBUFFERED=1
 RUN chmod +x server.sh && chmod +x worker.sh
 
 

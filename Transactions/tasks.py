@@ -3,6 +3,7 @@ import io
 import qrcode
 import base64
 from django.urls import reverse
+from django.db.models import F
 from Events.models import OrderTicket
 from Transactions.models import Payment, SoldTicket
 from Users.models import User
@@ -94,6 +95,7 @@ if payment was sucessful
 '''
 @shared_task
 def create_payment_record(bought_ticket_id, amount, user_id, email):
+        print(user_id)
         user=User.objects.get(id=user_id)
         ref_code=generate_ref_code()
         try:
@@ -101,11 +103,12 @@ def create_payment_record(bought_ticket_id, amount, user_id, email):
          payment=Payment.objects.create(user=user, amount=amount, ticket=bought_ticket, payment_id=ref_code)
          bought_ticket.status = 'completed'
          for ticket in bought_ticket.tickets.all():
-              ticket.event_ticket.sold +=  ticket.qty
+              ticket.event_ticket.sold= F('sold') + ticket.qty
               ticket.event_ticket.save()
               ticket.completed= True
               ticket.save()
          bought_ticket.save()
+         bought_ticket.tickets.update
          create_ticket(email=email, bought_ticket_id=bought_ticket_id, payment_id=payment.id, user_id=user_id)
         except Exception as e:
             print(e) 
